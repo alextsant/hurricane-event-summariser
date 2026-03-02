@@ -24,9 +24,21 @@ An AI-powered, real-time hurricane threat assessment tool. Enter any address or 
 
 ## Demo
 
+The screenshots below walk through both operating modes. Each one shows the complete output of a single button click: threat badge, AI briefing, ElevenLabs voice player, and (in the backtest) live-filtered news results.
+
+---
+
 ### Standard mode — no active storms (1 March 2026, Kingston, Jamaica)
 
-The Atlantic hurricane season runs June–November. Outside that window the app correctly reports no NHC-tracked activity, giving the "None" threat level and a Mistral-generated all-clear briefing. This screenshot was taken on 1 March 2026 — the same day as the hackathon deadline — confirming the live pipeline is working end-to-end even when there is nothing to track.
+**Inputs:** Location `Kingston, Jamaica` · Voice Summary enabled · Historical Backtest off.
+
+The Atlantic hurricane season runs June–November. This run was made on 1 March 2026 — outside peak season — so the NHC is not tracking any active storms in the Atlantic, Eastern Pacific, or Central Pacific basins. The app correctly classifies this as **Threat Level: None** (green badge) and generates a concise all-clear briefing via Mistral Large:
+
+> *"No active tropical cyclones. The NHC is not currently tracking any named storms near Kingston, Jamaica. You are safe — but please check back later, especially during hurricane season (June through November)."*
+
+ElevenLabs synthesises and autoplays a **14-second voice briefing** of that text — visible as the orange waveform in the audio player on the AI Safety Briefing tab. The app automatically switches to this tab when results are ready so the voice plays immediately without any extra click.
+
+This screenshot confirms the full pipeline (geocoding → NHC data fetch → GIS intersection → Mistral → ElevenLabs) runs correctly even when there is nothing threatening to report.
 
 ![Standard mode — no active hurricane](docs/screenshot_standard_mode.png)
 
@@ -34,7 +46,31 @@ The Atlantic hurricane season runs June–November. Outside that window the app 
 
 ### Historical backtest mode — Hurricane Melissa (2025), Kingston, Jamaica
 
-Enable "Historical Backtest Mode" in the UI accordion, set the date to `2025-10-28 17:25` UTC, and enter `Kingston, Jamaica`. The app retrieves the ATCF best-track position for that moment, fetches the archived NHC GIS advisory shapefiles, intersects Jamaica against the cone and watch/warning polygons, and generates a location-specific threat briefing as it would have appeared at that time. News results are filtered to articles published on or before the selected date, preventing any post-event leakage.
+**Inputs:** Location `Kingston, Jamaica` · Historical Backtest enabled · Date `2025-10-28 17:25` UTC.
+
+At that moment, Extratropical Cyclone Melissa was centred approximately 74 miles south of Kingston, packing 170 mph sustained winds and a central pressure of 897 mb. The app fetches the ATCF best-track archive for 2025, interpolates Melissa's exact position at the chosen timestamp, retrieves the archived NHC GIS advisory shapefiles current at that time, and intersects Kingston against the cone and watch/warning polygons. The result is **Threat Level: Extreme** (purple badge).
+
+The Mistral Large briefing generated for that moment reads:
+
+> **Situation Overview:** *"Extratropical Cyclone Melissa is now centred about seventy-four miles south of Kingston, Jamaica, packing sustained winds of one hundred seventy miles per hour and a central pressure of eight hundred ninety-seven millibars."*
+>
+> **Threat Assessment for Kingston, Jamaica:** *"Melissa is an extreme threat to your area — hurricane-force winds, life-threatening storm surge, and catastrophic rainfall are already affecting the island; shelter in place immediately."*
+>
+> **Take these three actions right now:**
+> 1. *Move to the innermost room on the lowest floor of a sturdy building, away from windows, and lie flat under a table or desk.*
+> 2. *Keep your emergency kit with you — water, flashlight, batteries, first-aid supplies, and a charged phone.*
+> 3. *Monitor local emergency alerts and do not venture outside until officials declare the all-clear.*
+
+ElevenLabs synthesises a full **1 minute 7 second voice briefing** of the above text, visible in the audio player waveform.
+
+Brave Search results are filtered to articles published **on or before 2025-10-28**, preventing any post-event leakage. The four news links shown in the screenshot are all contemporaneous sources:
+
+- *October 27, 2025: News on Hurricane Melissa — CNN*
+- *On the ground: Hurricane Melissa makes landfall*
+- *Recent Hurricanes in Jamaica*
+- *Jamaica braces for Hurricane Melissa, strongest storm of 2025*
+
+This demonstrates that the historical backtest is not a static replay — it reconstructs the full information environment as it existed at that moment in time.
 
 ![Historical backtest — Hurricane Melissa 2025](docs/screenshot_historical_backtest.png)
 
